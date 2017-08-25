@@ -21,6 +21,9 @@
     <ClCompile Include="simplevm_memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplevm_machine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplevm_types.h">
@@ -29,7 +32,7 @@
     <ClInclude Include="simplevm_memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simplevm.h">
+    <ClInclude Include="simplevm_machine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
