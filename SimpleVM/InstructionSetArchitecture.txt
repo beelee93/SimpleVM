@@ -1,0 +1,128 @@
+=======================================
+SimpleVM Instruction Set Architecture
+=======================================
+
+SimpleVM uses instructions of variable length, which depends 
+on the opcode being processed.
+
+Each opcode is 8 bits long. However, its operands can be 
+of any size (1,2,4 bytes)
+
+There are 4 types of opcodes
+1. Data Movement
+2. Arithmetic
+3. Jumps/Conditionals
+4. Others
+
+=======================================
+1. Data Movement Opcodes
+=======================================
+
+LOAD Imm
+	Loads the immediate value (32-bits) into
+	Register 0
+	This is the only means of putting immediate
+	values into the register
+
+MOV Ry, Rx
+	Moves 32-bit data from register Rx to Ry
+
+MOV [Ry], Rx
+	Moves 32-bit data from register Rx to memory
+	pointed by Ry's value
+
+MOV Ry, [Rx]
+	Moves 32-bit data from memory pointed by Rx's
+	value to register Ry
+
+-- following works the same, but for 8-bit data
+MOVB [Ry], Rx
+MOVB Ry, [Rx] -- Ry is then sign extended
+
+-- following works the same, but for 16-bit data
+MOVW [Ry], Rx
+MOVW Ry, [Rx] -- Ry is then sign extended
+
+=======================================
+2. Arithmetic
+=======================================
+
+ADD Ry, Rx
+	Ry <- Ry + Rx
+
+SUB Ry, Rx
+	Ry <- Ry - Rx
+
+MUL Ry, Rx
+	Ry <- Low DWORD (Ry*Rx)
+	R7 <- Hi DWORD (Ry*Rx)
+
+DIV Ry, Rx
+	Ry <- Ry / Rx
+
+MOD Ry, Rx
+	Ry <- Ry % Rx
+
+AND Ry, Rx
+	Ry <- Ry & Rx
+
+OR Ry, Rx
+	Ry <- Ry | Rx
+
+NOT Ry
+	Ry <- ~Ry
+
+XOR Ry, Rx
+	Ry <- Ry ^ Rx
+
+=======================================
+3. Jumps/Conditionals
+=======================================
+
+
+=======================================
+4. Others
+=======================================
+
+SYS Imm
+	Performs a system-defined function
+	Function is indexed with the immediate value
+
+PUSH Rx
+	Pushes the 32-bit value of a register to stack
+
+-- following are similar but for different sized
+-- values
+
+PUSHB Rx
+PUSHW Rx
+
+POP Rx
+	Pops 32 bits of value into register Rx
+
+-- following are similar but for different sized
+-- values
+POPB Rx
+POPW Rx
+
+CALL Imm
+	Calls the subroutine at specified offset
+	Pushes current PC to stack
+
+RET
+	Pops value off from stack as current PC
+
+NOP
+	No operation
+
+
+=======================================
+Test
+=======================================
+
+0x00, // NOP
+0x01, 0xFF, 0x00, 0x00, 0x00, // Load 255 into R0
+0x02, 0x10, // MOV R1, R0
+0x01, 0x1,0,0,0, // Load 0x1 into R0
+0x05, 0x01 // ADD R0, R1
+

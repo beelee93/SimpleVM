@@ -23,7 +23,12 @@ namespace SimpleVM {
 		BYTE popByte();
 		WORD popWord();
 		DWORD popDword();
+
+
+		int handleDataMovement(UINT8 opcode);
+		int handleArithmetic(UINT8 opcode);
 	
+		void decodeRegisters(UINT8 regOperand, DWORD** reg1, DWORD** reg2);
 	public:
 		VirtualMachine();
 		~VirtualMachine();
@@ -38,5 +43,8 @@ namespace SimpleVM {
 		// normal operation
 		void loadProgram(BYTE* program, UINT32 programSize);
 		void tick();
+
+		void debugPrintRegisters();
+		void debugPrintMemory(UINT32 offset);
 	};
 }

@@ -148,6 +148,13 @@
     <ClInclude Include="simplevm_memory.h" />
     <ClInclude Include="simplevm_types.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="InstructionSetArchitecture.txt" />
+    <Text Include="OpcodesBinary.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
