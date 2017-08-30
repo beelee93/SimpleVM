@@ -27,7 +27,8 @@ namespace SimpleVM {
 
 		int handleDataMovement(UINT8 opcode);
 		int handleArithmetic(UINT8 opcode);
-	
+		int handleOthers(UINT8 opcode);
+
 		void decodeRegisters(UINT8 regOperand, DWORD** reg1, DWORD** reg2);
 	public:
 		VirtualMachine();

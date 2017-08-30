@@ -111,7 +111,8 @@ void SimpleVM::VirtualMachine::tick()
 		goto handled;
 	if (handleArithmetic(opcode))
 		goto handled;
-
+	if (handleOthers(opcode))
+		goto handled;
 
 	// upon reaching here, it has not been handled
 	throw SVM_EXCEPTION_UNSUPPORTED_OPCODE;
@@ -131,7 +132,7 @@ int SimpleVM::VirtualMachine::handleDataMovement(UINT8 opcode) {
 		int advancePC = 1;
 		DWORD *reg1, *reg2;
 		UINT8 regOperand = memory->getByte(pc);
-		UINT8 sign;
+		UINT16 sign;
 		decodeRegisters(regOperand, &reg1, &reg2);
 
 		switch (opcode) {
@@ -188,7 +189,6 @@ int SimpleVM::VirtualMachine::handleDataMovement(UINT8 opcode) {
 }
 
 int SimpleVM::VirtualMachine::handleArithmetic(UINT8 opcode) {
-
 	DWORD *reg1, *reg2;
 	UINT8 regOperand = memory->getByte(pc);
 	decodeRegisters(regOperand, &reg1, &reg2);
@@ -233,11 +233,67 @@ int SimpleVM::VirtualMachine::handleArithmetic(UINT8 opcode) {
 	return 1;
 }
 
+int SimpleVM::VirtualMachine::handleOthers(UINT8 opcode) {
+	int pcAdd = 1;
+	DWORD *reg1, *reg2;
+	UINT8 regOperand = memory->getByte(pc);
+	UINT16 sign;
+	decodeRegisters(regOperand, &reg1, &reg2);
+
+	switch (opcode) {
+	case opPUSH_R:
+		pushDword(*reg1);
+		break;
+	case opPUSHB_R:
+		pushByte(*reg1);
+		break;
+	case opPUSHW_R:
+		pushWord(*reg1);
+		break;
+	case opPOP_R:
+		*reg1 = popDword();
+		break;
+	case opPOPB_R:
+		*reg1 = popByte();
+		// sign extension
+		sign = ((*reg1) & 0x80);
+		if (sign)
+			*reg1 = (*reg1) | 0xFFFFFF00;
+		else
+			*reg1 = (*reg1) & 0x000000FF;
+		break;
+
+	case opPOPW_R:
+		*reg1 = popWord();
+		// sign extension
+		sign = ((*reg1) & 0x8000);
+		if (sign)
+			*reg1 = (*reg1) | 0xFFFF0000;
+		else
+			*reg1 = (*reg1) & 0x0000FFFF;
+
+		break;
+	case opCALL_I:
+		pcAdd = 0;
+		pushDword(pc+4);
+		pc = memory->getDword(pc);
+	break;
+	case opRET:
+		pcAdd = 0;
+		pc = popDword();
+		break;
+	default:
+		return 0;
+	}
+
+	pc += pcAdd;
+	return 1;
+}
 
 
 void SimpleVM::VirtualMachine::debugPrintRegisters()
 {
-	printf("========\n");
+	printf("======== PC[%x]\n", pc);
 	for (int i = 0; i < SVM_REGISTER_COUNT; i++)
 		printf("Register %d: %X\n", i, registers[i]);
 	printf("========\n");
