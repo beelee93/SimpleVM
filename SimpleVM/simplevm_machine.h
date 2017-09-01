@@ -1,4 +1,5 @@
 #pragma once
+#include "simplevm_clock.h"
 #include "simplevm_memory.h"
 
 #define SVM_REGISTER_COUNT 8
@@ -13,8 +14,10 @@ namespace SimpleVM {
 		UINT32 pc; // program counter
 		UINT32 sp; // stack pointer
 		UINT16 control; // control flags
-
+		UINT8 interrupt; // the current interrupt signal
 		DWORD registers[SVM_REGISTER_COUNT];
+
+		bool halted;
 
 		// stack operations
 		void pushByte(BYTE x);
@@ -28,8 +31,13 @@ namespace SimpleVM {
 		int handleDataMovement(UINT8 opcode);
 		int handleArithmetic(UINT8 opcode);
 		int handleOthers(UINT8 opcode);
+		int handleJumps(UINT8 opcode);
 
 		void decodeRegisters(UINT8 regOperand, DWORD** reg1, DWORD** reg2);
+
+		void setInterrupt(UINT8 intId);
+		UINT8 processInterrupt();
+
 	public:
 		VirtualMachine();
 		~VirtualMachine();
@@ -43,9 +51,16 @@ namespace SimpleVM {
 
 		// normal operation
 		void loadProgram(BYTE* program, UINT32 programSize);
+
+		// performs 1 CPU tick
 		void tick();
 
-		void debugPrintRegisters();
+		// runs this machine until halt
+		void run(ClockBase* clockInstance);
+
+		bool isHalted();
+
+		void debugPrintRegisters(int whichReg);
 		void debugPrintMemory(UINT32 offset);
 	};
 }

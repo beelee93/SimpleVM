@@ -14,7 +14,12 @@ typedef UINT32 DWORD;
 #define NULL 0
 #endif
 
+#define CONTROL_ZERO 0x01
+#define CONTROL_SIGN 0x02
 
+#define SET(x, cnFlag) (x = (x | cnFlag))
+#define UNSET(x, cnFlag) (x = (x & (~cnFlag)))
+#define ISSET(x, cnFlag) ((x & cnFlag) == cnFlag)
 // Exceptions
 
 #define SVM_EXCEPTION_GENERIC 1000
@@ -72,3 +77,16 @@ typedef UINT32 DWORD;
 
 #define opCALL_I	0x10
 #define opRET		0xD0
+#define opHALT		0x90
+#define opSYS_I		0x50
+
+#define opCMP_RR	0x11
+#define opJMP_I		0x12
+#define opJEQ_I		0x13
+#define opJNEQ_I	0x53
+
+// Interrupts
+
+#define INT_NULL		0
+#define INT_HALT		0x10
+#define INT_OUTCHAR		0x21

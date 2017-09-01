@@ -140,10 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="simplevm_clock.cpp" />
     <ClCompile Include="simplevm_machine.cpp" />
     <ClCompile Include="simplevm_memory.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="simplevm_clock.h" />
     <ClInclude Include="simplevm_machine.h" />
     <ClInclude Include="simplevm_memory.h" />
     <ClInclude Include="simplevm_types.h" />

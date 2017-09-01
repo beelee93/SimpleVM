@@ -3,39 +3,41 @@
 using namespace SimpleVM;
 
 
-VirtualMachine::VirtualMachine()
+SimpleVM::VirtualMachine::VirtualMachine()
 {
 	reset();
 
 	memory = new Memory(SVM_MEMORY_SIZE);
 }
 
-VirtualMachine::~VirtualMachine()
+SimpleVM::VirtualMachine::~VirtualMachine()
 {
 	delete memory;
 	memory = NULL;
 }
 
-void VirtualMachine::reset()
+void SimpleVM::VirtualMachine::reset()
 {
 	for (int i = 0; i < SVM_REGISTER_COUNT; i++)
 		registers[i] = 0;
 
 	pc = sp = 0;
 	control = 0;
+	interrupt = INT_NULL;
+	halted = false;
 }
 
-UINT32 VirtualMachine::getPC()
+UINT32 SimpleVM::VirtualMachine::getPC()
 {
 	return pc;
 }
 
-UINT32 VirtualMachine::getSP()
+UINT32 SimpleVM::VirtualMachine::getSP()
 {
 	return sp;
 }
 
-DWORD VirtualMachine::getRegister(UINT32 regIndex)
+DWORD SimpleVM::VirtualMachine::getRegister(UINT32 regIndex)
 {
 	if (regIndex >= SVM_REGISTER_COUNT)
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_BOUNDS;
@@ -99,6 +101,14 @@ void SimpleVM::VirtualMachine::decodeRegisters(UINT8 regOperand, DWORD ** reg1, 
 // ==== the heart of the vm ====
 void SimpleVM::VirtualMachine::tick()
 {
+	if (halted)
+		return; // do nothing if halted
+
+	// check for interrupt
+	if (interrupt != INT_NULL) {
+		interrupt = processInterrupt();
+		return;
+	}
 	if (pc >= SVM_MEMORY_SIZE)
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_MEMORY;
 
@@ -111,6 +121,8 @@ void SimpleVM::VirtualMachine::tick()
 		goto handled;
 	if (handleArithmetic(opcode))
 		goto handled;
+	if (handleJumps(opcode))
+		goto handled;
 	if (handleOthers(opcode))
 		goto handled;
 
@@ -119,6 +131,16 @@ void SimpleVM::VirtualMachine::tick()
 
 handled:
 	return;
+}
+
+void SimpleVM::VirtualMachine::run(ClockBase* clockInstance)
+{
+	clockInstance->runOn(this);
+}
+
+bool SimpleVM::VirtualMachine::isHalted()
+{
+	return halted;
 }
 
 
@@ -282,6 +304,14 @@ int SimpleVM::VirtualMachine::handleOthers(UINT8 opcode) {
 		pcAdd = 0;
 		pc = popDword();
 		break;
+	case opHALT:
+		pcAdd = 0;
+		setInterrupt(INT_HALT);
+		break;
+	case opSYS_I:
+		pcAdd = 1;
+		setInterrupt(regOperand);
+		break;
 	default:
 		return 0;
 	}
@@ -290,12 +320,85 @@ int SimpleVM::VirtualMachine::handleOthers(UINT8 opcode) {
 	return 1;
 }
 
-
-void SimpleVM::VirtualMachine::debugPrintRegisters()
+int SimpleVM::VirtualMachine::handleJumps(UINT8 opcode)
 {
-	printf("======== PC[%x]\n", pc);
-	for (int i = 0; i < SVM_REGISTER_COUNT; i++)
-		printf("Register %d: %X\n", i, registers[i]);
+	int pcAdd = 4;
+	DWORD *reg1, *reg2;
+	UINT32 offset;
+	UINT8 regOperand = memory->getByte(pc);
+	decodeRegisters(regOperand, &reg1, &reg2);
+
+	switch (opcode) {
+	case opCMP_RR:
+		pcAdd = 1;
+		regOperand = memory->getByte(pc);
+		decodeRegisters(regOperand, &reg1, &reg2);
+		if (*reg1 > *reg2) {
+			UNSET(control, CONTROL_SIGN);
+			UNSET(control, CONTROL_ZERO);
+		}
+		else if (*reg1 < *reg2) {
+			SET(control, CONTROL_SIGN);
+			UNSET(control, CONTROL_ZERO);
+		}
+		else {
+			UNSET(control, CONTROL_SIGN);
+			SET(control, CONTROL_ZERO);
+		}
+		break;
+
+	case opJEQ_I:
+		offset = memory->getDword(pc);
+		if (ISSET(control, CONTROL_ZERO)) {
+			pc = offset;
+			pcAdd = 0;
+		}
+		break;
+	case opJNEQ_I:
+		offset = memory->getDword(pc);
+		if (!ISSET(control, CONTROL_ZERO)) {
+			pc = offset;
+			pcAdd = 0;
+		}
+		break;
+	case opJMP_I:
+		offset = memory->getDword(pc);
+		pc = offset;
+		pcAdd = 0;
+		break;
+	default:
+		return 0;
+	}
+
+	pc += pcAdd;
+	return 1;
+}
+
+void SimpleVM::VirtualMachine::setInterrupt(UINT8 intId) {
+	interrupt = intId;
+}
+
+UINT8 SimpleVM::VirtualMachine::processInterrupt() {
+	switch (interrupt) {
+	case INT_HALT:
+		halted = true;
+		break;
+	case INT_OUTCHAR:
+		printf("%c", registers[0] & 0xFF);
+		break;
+	}
+	return INT_NULL;
+}
+
+void SimpleVM::VirtualMachine::debugPrintRegisters(int whichReg)
+{
+	if (!whichReg) return;
+
+	printf("======== PC[%d]\n", pc);
+	for (int i = 0; i < SVM_REGISTER_COUNT; i++) {
+		if(whichReg & (1<<i))
+			printf("Register %d: %d[%X]\n", i, registers[i], registers[i]);
+	}
 	printf("========\n");
 }
 
