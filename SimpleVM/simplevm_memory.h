@@ -9,21 +9,21 @@ namespace SimpleVM {
 	// The RAM is byte-addressible
 	class Memory {
 	public:
-		Memory(UINT32 size);
+		Memory(VM_UINT32 size);
 		~Memory();
 
-		UINT32 getSize();
+		VM_UINT32 getSize();
 
 		// accessing memory
-		BYTE& getByte(UINT32 offset);
-		WORD& getWord(UINT32 offset);
-		DWORD& getDword(UINT32 offset);
+		VM_BYTE& getByte(VM_UINT32 offset);
+		VM_WORD& getWord(VM_UINT32 offset);
+		VM_DWORD& getDword(VM_UINT32 offset);
 
 		// copying to memory
-		void write(BYTE* raw, UINT32 length, UINT32 startingOffsetInMemory);
+		void write(VM_BYTE* raw, VM_UINT32 length, VM_UINT32 startingOffsetInMemory);
 
 	private:
-		UINT32 size;
-		BYTE* memory;
+		VM_UINT32 size;
+		VM_BYTE* memory;
 	};
 }

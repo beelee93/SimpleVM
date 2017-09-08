@@ -20,7 +20,7 @@ void SimpleVM::ClockBase::tick()
 	}
 }
 
-void SimpleVM::ClockBase::setDebugRegisters(UINT8 whichReg)
+void SimpleVM::ClockBase::setDebugRegisters(VM_UINT8 whichReg)
 {
 	debugReg = whichReg;
 }
@@ -47,7 +47,7 @@ void SimpleVM::TimedClock::runOn(VirtualMachine* mac) {
 				try {
 					tick();
 				}
-				catch (UINT32 ex) {
+				catch (VM_UINT32 ex) {
 					printf("Exception occurred: %d\n", ex);
 					running = false;
 				}
@@ -66,7 +66,7 @@ void SimpleVM::KeyClock::runOn(VirtualMachine* mac) {
 		try {
 			tick();
 		}
-		catch (UINT32 ex) {
+		catch (VM_UINT32 ex) {
 			printf("Exception occurred: %d\n", ex);
 			break;
 		}

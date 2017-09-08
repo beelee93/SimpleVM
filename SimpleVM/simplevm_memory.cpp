@@ -4,11 +4,11 @@
 
 using namespace SimpleVM;
 
-Memory::Memory(UINT32 size) {
+Memory::Memory(VM_UINT32 size) {
 	this->size = size;
 
 	// allocate size-number of bytes
-	memory = (BYTE*)malloc(size);
+	memory = (VM_BYTE*)malloc(size);
 
 	if (!memory) 
 		throw SVM_EXCEPTION_CANNOT_ALLOCATE_MEMORY;
@@ -21,32 +21,32 @@ Memory::~Memory() {
 	}
 }
 
-UINT32 Memory::getSize() {
+VM_UINT32 Memory::getSize() {
 	return size;
 }
 
-BYTE & SimpleVM::Memory::getByte(UINT32 offset)
+VM_BYTE & SimpleVM::Memory::getByte(VM_UINT32 offset)
 {
 	if (offset >= size)
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_BOUNDS;
 	return *(memory + offset);
 }
 
-WORD & SimpleVM::Memory::getWord(UINT32 offset)
+VM_WORD & SimpleVM::Memory::getWord(VM_UINT32 offset)
 {
 	if (offset >= size-1)
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_BOUNDS;
-	return *((WORD*)(memory + offset));
+	return *((VM_WORD*)(memory + offset));
 }
 
-DWORD & SimpleVM::Memory::getDword(UINT32 offset)
+VM_DWORD & SimpleVM::Memory::getDword(VM_UINT32 offset)
 {
 	if (offset >= size - 3)
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_BOUNDS;
-	return *((DWORD*)(memory + offset));
+	return *((VM_DWORD*)(memory + offset));
 }
 
-void SimpleVM::Memory::write(BYTE * raw, UINT32 length, UINT32 startingOffsetInMemory)
+void SimpleVM::Memory::write(VM_BYTE * raw, VM_UINT32 length, VM_UINT32 startingOffsetInMemory)
 {
 	if (startingOffsetInMemory >= size)
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_BOUNDS;

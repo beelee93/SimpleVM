@@ -141,13 +141,17 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="simplevm_clock.cpp" />
+    <ClCompile Include="simplevm_io_module.cpp" />
     <ClCompile Include="simplevm_machine.cpp" />
     <ClCompile Include="simplevm_memory.cpp" />
+    <ClCompile Include="simplevm_sevseg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplevm_clock.h" />
+    <ClInclude Include="simplevm_io_module.h" />
     <ClInclude Include="simplevm_machine.h" />
     <ClInclude Include="simplevm_memory.h" />
+    <ClInclude Include="simplevm_sevseg.h" />
     <ClInclude Include="simplevm_types.h" />
   </ItemGroup>
   <ItemGroup>

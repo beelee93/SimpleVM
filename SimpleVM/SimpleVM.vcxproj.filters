@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\IO">
+      <UniqueIdentifier>{96784673-5b50-4a9e-882d-3d1af1504c78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IO">
+      <UniqueIdentifier>{45cb8058-3500-4370-a406-60066258219a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,6 +33,12 @@
     <ClCompile Include="simplevm_clock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplevm_io_module.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="simplevm_sevseg.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplevm_types.h">
@@ -40,6 +52,12 @@
     </ClInclude>
     <ClInclude Include="simplevm_clock.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplevm_io_module.h">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="simplevm_sevseg.h">
+      <Filter>Header Files\IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

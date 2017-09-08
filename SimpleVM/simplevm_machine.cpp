@@ -27,69 +27,69 @@ void SimpleVM::VirtualMachine::reset()
 	halted = false;
 }
 
-UINT32 SimpleVM::VirtualMachine::getPC()
+VM_UINT32 SimpleVM::VirtualMachine::getPC()
 {
 	return pc;
 }
 
-UINT32 SimpleVM::VirtualMachine::getSP()
+VM_UINT32 SimpleVM::VirtualMachine::getSP()
 {
 	return sp;
 }
 
-DWORD SimpleVM::VirtualMachine::getRegister(UINT32 regIndex)
+VM_DWORD SimpleVM::VirtualMachine::getRegister(VM_UINT32 regIndex)
 {
 	if (regIndex >= SVM_REGISTER_COUNT)
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_BOUNDS;
 	return registers[regIndex];
 }
 
-void SimpleVM::VirtualMachine::loadProgram(BYTE * program, UINT32 programSize)
+void SimpleVM::VirtualMachine::loadProgram(VM_BYTE * program, VM_UINT32 programSize)
 {
 	memory->write(program, programSize, 0);
 }
 
 // === stack operations ===
-void SimpleVM::VirtualMachine::pushByte(BYTE x)
+void SimpleVM::VirtualMachine::pushByte(VM_BYTE x)
 {
 	sp = (sp - 1) % SVM_MEMORY_SIZE;
 	memory->getByte(sp) = x;
 }
 
-void SimpleVM::VirtualMachine::pushWord(WORD x)
+void SimpleVM::VirtualMachine::pushWord(VM_WORD x)
 {
 	sp = (sp - 2) % SVM_MEMORY_SIZE;
 	memory->getWord(sp) = x;
 }
 
-void SimpleVM::VirtualMachine::pushDword(DWORD x)
+void SimpleVM::VirtualMachine::pushDword(VM_DWORD x)
 {
 	sp = (sp - 4) % SVM_MEMORY_SIZE;
 	memory->getDword(sp) = x;
 }
 
-BYTE SimpleVM::VirtualMachine::popByte()
+VM_BYTE SimpleVM::VirtualMachine::popByte()
 {
-	BYTE x = memory->getByte(sp);
+	VM_BYTE x = memory->getByte(sp);
 	sp = (sp + 1) % SVM_MEMORY_SIZE;
 	return x;
 }
 
-WORD SimpleVM::VirtualMachine::popWord()
+VM_WORD SimpleVM::VirtualMachine::popWord()
 {
-	WORD x = memory->getWord(sp);
+	VM_WORD x = memory->getWord(sp);
 	sp = (sp + 2) % SVM_MEMORY_SIZE;
 	return x;
 }
 
-DWORD SimpleVM::VirtualMachine::popDword()
+VM_DWORD SimpleVM::VirtualMachine::popDword()
 {
-	DWORD x = memory->getDword(sp);
+	VM_DWORD x = memory->getDword(sp);
 	sp = (sp + 4) % SVM_MEMORY_SIZE;
 	return x;
 }
 
-void SimpleVM::VirtualMachine::decodeRegisters(UINT8 regOperand, DWORD ** reg1, DWORD ** reg2)
+void SimpleVM::VirtualMachine::decodeRegisters(VM_UINT8 regOperand, VM_DWORD ** reg1, VM_DWORD ** reg2)
 {
 	int r1, r2;
 	r1 = (regOperand & 0xF0) >> 4;
@@ -113,7 +113,7 @@ void SimpleVM::VirtualMachine::tick()
 		throw SVM_EXCEPTION_CANNOT_OUT_OF_MEMORY;
 
 	// get the opcode
-	BYTE opcode = memory->getByte(pc++);
+	VM_BYTE opcode = memory->getByte(pc++);
 
 	if (opcode == opNOP) return; // do nothing
 
@@ -145,16 +145,16 @@ bool SimpleVM::VirtualMachine::isHalted()
 
 
 
-int SimpleVM::VirtualMachine::handleDataMovement(UINT8 opcode) {
+int SimpleVM::VirtualMachine::handleDataMovement(VM_UINT8 opcode) {
 	if (opcode == opLOAD_I) {
 		registers[0] = memory->getDword(pc);
 		pc += 4;
 	}
 	else {
 		int advancePC = 1;
-		DWORD *reg1, *reg2;
-		UINT8 regOperand = memory->getByte(pc);
-		UINT16 sign;
+		VM_DWORD *reg1, *reg2;
+		VM_UINT8 regOperand = memory->getByte(pc);
+		VM_UINT16 sign;
 		decodeRegisters(regOperand, &reg1, &reg2);
 
 		switch (opcode) {
@@ -210,9 +210,9 @@ int SimpleVM::VirtualMachine::handleDataMovement(UINT8 opcode) {
 	return 1;
 }
 
-int SimpleVM::VirtualMachine::handleArithmetic(UINT8 opcode) {
-	DWORD *reg1, *reg2;
-	UINT8 regOperand = memory->getByte(pc);
+int SimpleVM::VirtualMachine::handleArithmetic(VM_UINT8 opcode) {
+	VM_DWORD *reg1, *reg2;
+	VM_UINT8 regOperand = memory->getByte(pc);
 	decodeRegisters(regOperand, &reg1, &reg2);
 
 	unsigned long long int mul;
@@ -255,11 +255,11 @@ int SimpleVM::VirtualMachine::handleArithmetic(UINT8 opcode) {
 	return 1;
 }
 
-int SimpleVM::VirtualMachine::handleOthers(UINT8 opcode) {
+int SimpleVM::VirtualMachine::handleOthers(VM_UINT8 opcode) {
 	int pcAdd = 1;
-	DWORD *reg1, *reg2;
-	UINT8 regOperand = memory->getByte(pc);
-	UINT16 sign;
+	VM_DWORD *reg1, *reg2;
+	VM_UINT8 regOperand = memory->getByte(pc);
+	VM_UINT16 sign;
 	decodeRegisters(regOperand, &reg1, &reg2);
 
 	switch (opcode) {
@@ -320,12 +320,12 @@ int SimpleVM::VirtualMachine::handleOthers(UINT8 opcode) {
 	return 1;
 }
 
-int SimpleVM::VirtualMachine::handleJumps(UINT8 opcode)
+int SimpleVM::VirtualMachine::handleJumps(VM_UINT8 opcode)
 {
 	int pcAdd = 4;
-	DWORD *reg1, *reg2;
-	UINT32 offset;
-	UINT8 regOperand = memory->getByte(pc);
+	VM_DWORD *reg1, *reg2;
+	VM_UINT32 offset;
+	VM_UINT8 regOperand = memory->getByte(pc);
 	decodeRegisters(regOperand, &reg1, &reg2);
 
 	switch (opcode) {
@@ -374,11 +374,11 @@ int SimpleVM::VirtualMachine::handleJumps(UINT8 opcode)
 	return 1;
 }
 
-void SimpleVM::VirtualMachine::setInterrupt(UINT8 intId) {
+void SimpleVM::VirtualMachine::setInterrupt(VM_UINT8 intId) {
 	interrupt = intId;
 }
 
-UINT8 SimpleVM::VirtualMachine::processInterrupt() {
+VM_UINT8 SimpleVM::VirtualMachine::processInterrupt() {
 	switch (interrupt) {
 	case INT_HALT:
 		halted = true;
@@ -402,9 +402,25 @@ void SimpleVM::VirtualMachine::debugPrintRegisters(int whichReg)
 	printf("========\n");
 }
 
-void SimpleVM::VirtualMachine::debugPrintMemory(UINT32 offset)
+void SimpleVM::VirtualMachine::debugPrintMemory(VM_UINT32 offset)
 {
 	printf("========\n");
 	printf("[%x] = %x\n", offset, memory->getDword(offset));
 	printf("========\n");
+}
+
+VM_UINT8* VirtualMachine::attachIO(IOModule* module, VM_UINT32 base, VM_UINT32 memLength)
+{
+	if (base < memory->getSize() &&
+		base + memLength <= memory->getSize()) {
+		return &(memory->getByte(base));
+	}
+	else
+		return NULL;
+}
+
+void VirtualMachine::detachIO(IOModule * module)
+{
+	// detach module
+	// currently nothing to do here
 }

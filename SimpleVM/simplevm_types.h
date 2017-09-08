@@ -2,13 +2,13 @@
 
 // Type definitions
 
-typedef unsigned char UINT8;
-typedef unsigned short UINT16;
-typedef unsigned int UINT32;
+typedef unsigned char VM_UINT8;
+typedef unsigned short VM_UINT16;
+typedef unsigned int VM_UINT32;
 
-typedef UINT8 BYTE;
-typedef UINT16 WORD;
-typedef UINT32 DWORD;
+typedef VM_UINT8 VM_BYTE;
+typedef VM_UINT16 VM_WORD;
+typedef VM_UINT32 VM_DWORD;
 
 #ifndef NULL
 #define NULL 0
@@ -28,6 +28,8 @@ typedef UINT32 DWORD;
 #define SVM_EXCEPTION_CANNOT_OUT_OF_MEMORY 1003
 
 #define SVM_EXCEPTION_UNSUPPORTED_OPCODE 2001
+
+#define SVM_EXCEPTION_IO 3001
 
 // Opcodes
 

@@ -7,8 +7,8 @@ namespace SimpleVM {
 
 	class ClockBase {
 	private:
-		UINT8 debugReg;
-		UINT32 tickCount;
+		VM_UINT8 debugReg;
+		VM_UINT32 tickCount;
 		int showDebugMessages;
 
 	protected: 
@@ -17,7 +17,7 @@ namespace SimpleVM {
 		void tick();
 
 	public:
-		void setDebugRegisters(UINT8 whichReg);
+		void setDebugRegisters(VM_UINT8 whichReg);
 		void setShowDebug(int show);
 		virtual void runOn(VirtualMachine*) = 0;
 	};

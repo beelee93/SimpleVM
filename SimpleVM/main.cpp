@@ -1,4 +1,5 @@
 #include "simplevm_machine.h"
+#include "simplevm_sevseg.h"
 
 #include <stdio.h>
 
@@ -6,7 +7,7 @@ using namespace SimpleVM;
 
 int main(int argc, char** argv) {
 	VirtualMachine mac;
-	UINT8 program[] = { 
+	VM_UINT8 program[] = { 
 		0x01, 1,0,0,0,		// 0: LOAD 1 (to R0)
 		0x02, 0x10,			// 5: MOV R1,R0 (R1 = R0)
 		0x01, 37,0,0,0,		// 7: Load 37 (to R0)
@@ -26,6 +27,9 @@ int main(int argc, char** argv) {
 	};
 
 	mac.loadProgram(program, sizeof(program));
+	IOSevenSegment* seg = new IOSevenSegment(&mac);
+	// ISSUE: This blocks execution until window closes
+
 	TimedClock clock(50);
 	clock.setShowDebug(0);
 	clock.setDebugRegisters(0x1F);
