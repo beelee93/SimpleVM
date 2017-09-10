@@ -15,12 +15,14 @@ namespace SimpleVM {
 		VirtualMachine* host;
 
 	public:
-		IOModule(VirtualMachine* host);
+		IOModule();
 		virtual ~IOModule();
+
+		virtual void attach(VirtualMachine* host);
 
 	protected:
 		// gets the memory mapping of this io module
-		virtual IOMemoryRequest getMemoryMapping();
+		virtual IOMemoryRequest getMemoryMapping() = 0;
 
 		VM_UINT8* getPtr();
 		VM_UINT32 getMemorySize();

@@ -3,19 +3,35 @@
 #include <Windows.h>
 
 namespace SimpleVM {
+	class IOSevenSegment;
+
+	typedef struct {
+		HINSTANCE hInst;
+		HWND window;
+		HANDLE thread;
+		IOSevenSegment* pObj;
+		int createSignal;
+		int stopSignal;
+	} CreateWindowThreadData;
 
 	class IOSevenSegment : public IOModule {
-		HWND handle;
+		CreateWindowThreadData threadData;
 
 	public:
 		static const VM_UINT32 BASE_OFFSET = 4096;
 		static const VM_UINT32 MEM_LENGTH = 2;
 
-		IOSevenSegment(VirtualMachine* host);
+		IOSevenSegment();
+		virtual ~IOSevenSegment();
+
+		virtual void attach(VirtualMachine* host) override;
 
 	protected:
-		virtual IOMemoryRequest getMemoryMapping() override;
+		virtual IOMemoryRequest getMemoryMapping();
 
-		static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		void onPaint(HWND hwnd);
+
+		static LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		static DWORD WINAPI windowThread(LPVOID param);
 	};
 }

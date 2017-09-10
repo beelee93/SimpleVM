@@ -3,7 +3,19 @@
 
 using namespace SimpleVM;
 
-IOModule::IOModule(VirtualMachine* host) {
+IOModule::IOModule() {
+	host = NULL;
+	_base = NULL;
+}
+
+IOModule::~IOModule() {
+	if (host) {
+		host->detachIO(this);
+		_base = NULL;
+	}
+}
+
+void IOModule::attach(VirtualMachine* host) {
 	// get the memory mapping
 	IOMemoryRequest req = this->getMemoryMapping();
 	_length = req.length;
@@ -11,16 +23,6 @@ IOModule::IOModule(VirtualMachine* host) {
 	// attach this io module
 	_base = host->attachIO(this, req.baseOffset, req.length);
 	this->host = host;
-}
-
-IOModule::~IOModule() {
-	host->detachIO(this);
-	_base = NULL;
-}
-
-IOMemoryRequest IOModule::getMemoryMapping()
-{
-	return { 0,0 };
 }
 
 VM_UINT8 * IOModule::getPtr()
